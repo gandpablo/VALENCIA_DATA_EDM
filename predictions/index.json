@@ -30,5 +30,9 @@
   {
     "path": "predictions/history/2026-06-23_12-58.csv",
     "timestamp": "2026-06-23_12-58"
+  },
+  {
+    "path": "predictions/history/2026-06-23_13-10.csv",
+    "timestamp": "2026-06-23_13-10"
   }
 ]
