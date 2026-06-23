@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+from air_quality_llm import ask_air_quality, summarize_air_quality
 from pipeline import run_manual_pipeline
 
 
@@ -490,28 +491,61 @@ def access_screen() -> None:
                     st.rerun()
             st.cache_data.clear()
             st.session_state.pop("pipeline_error", None)
+            st.session_state.pop("ai_summary", None)
+            st.session_state.pop("ai_summary_error", None)
+            st.session_state.pop("chat_messages", None)
             st.session_state["access_granted"] = True
             st.session_state["last_pipeline_result"] = result
             st.rerun()
 
 
 def chat_panel() -> None:
-    if "chat_messages" not in st.session_state:
-        st.session_state["chat_messages"] = [("bot", "Hola, esto es un chat generico")]
+    summary_tab, chat_tab = st.tabs(["Resumen IA", "Chat"])
 
-    messages = ['<div class="side-title">Chat</div>']
-    for role, message in st.session_state["chat_messages"][-8:]:
-        klass = "chat-bubble-user" if role == "user" else "chat-bubble-bot"
-        messages.append(f'<div class="{klass}">{html.escape(message)}</div>')
-    st.markdown(f'<section class="chat-card">{"".join(messages)}</section>', unsafe_allow_html=True)
+    with summary_tab:
+        st.markdown('<div class="side-title">Resumen IA</div>', unsafe_allow_html=True)
+        if "ai_summary" not in st.session_state:
+            with st.spinner("Generando resumen..."):
+                try:
+                    st.session_state["ai_summary"] = summarize_air_quality()
+                except Exception as exc:
+                    st.session_state["ai_summary_error"] = str(exc)
 
-    with st.form("mock_chat_form", clear_on_submit=True):
-        prompt = st.text_input("Mensaje", placeholder="Escribe una pregunta")
-        submitted = st.form_submit_button("Enviar", use_container_width=True)
-        if submitted and prompt.strip():
-            st.session_state["chat_messages"].append(("user", prompt.strip()))
-            st.session_state["chat_messages"].append(("bot", "Hola, esto es un chat generico"))
-            st.rerun()
+        if "ai_summary_error" in st.session_state:
+            st.error(f"No se ha podido generar el resumen: {st.session_state['ai_summary_error']}")
+            if st.button("Reintentar resumen", use_container_width=True):
+                st.session_state.pop("ai_summary", None)
+                st.session_state.pop("ai_summary_error", None)
+                st.rerun()
+        else:
+            st.markdown(f'<section class="chat-card"><div class="chat-bubble-bot">{html.escape(st.session_state["ai_summary"])}</div></section>', unsafe_allow_html=True)
+
+    with chat_tab:
+        st.markdown('<div class="side-title">Chat</div>', unsafe_allow_html=True)
+        if "chat_messages" not in st.session_state:
+            st.session_state["chat_messages"] = [
+                ("bot", "Pregunta sobre valores actuales, predicciones, zonas o contaminantes.")
+            ]
+
+        messages = []
+        for role, message in st.session_state["chat_messages"][-8:]:
+            klass = "chat-bubble-user" if role == "user" else "chat-bubble-bot"
+            messages.append(f'<div class="{klass}">{html.escape(message)}</div>')
+        st.markdown(f'<section class="chat-card">{"".join(messages)}</section>', unsafe_allow_html=True)
+
+        with st.form("ai_chat_form", clear_on_submit=True):
+            prompt = st.text_input("Mensaje", placeholder="Escribe una pregunta")
+            submitted = st.form_submit_button("Enviar", use_container_width=True)
+            if submitted and prompt.strip():
+                question = prompt.strip()
+                st.session_state["chat_messages"].append(("user", question))
+                with st.spinner("Consultando Mistral..."):
+                    try:
+                        answer = ask_air_quality(question)
+                    except Exception as exc:
+                        answer = f"No se ha podido responder ahora: {exc}"
+                st.session_state["chat_messages"].append(("bot", answer))
+                st.rerun()
 
 
 def toolbar() -> tuple[str, str]:
