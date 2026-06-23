@@ -1,0 +1,4 @@
+﻿timestamp,event,status,duration_seconds,message
+2026-06-23T07:00:00+00:00,scrape,ok,18.00,synthetic scrape 2026-06-23_09-00 uploaded
+2026-06-23T07:02:00+00:00,predict,ok,3.00,mock +8h predictions generated
+2026-06-23T07:05:00+00:00,retrain,ok,95.00,64 models available
