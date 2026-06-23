@@ -1,0 +1,642 @@
+[
+  {
+    "station": "València - Av. França",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_av_franca__so2__h08.json",
+    "mae": 0.2309692106664274,
+    "baseline_mae": 0.17360114777618366,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_av_franca__so2__h24.json",
+    "mae": 0.23997366518401855,
+    "baseline_mae": 0.16740088105726872,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_av_franca__no2__h08.json",
+    "mae": 11.09878938269542,
+    "baseline_mae": 15.437037037037037,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_av_franca__no2__h24.json",
+    "mae": 11.103587591780553,
+    "baseline_mae": 11.342424242424242,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_av_franca__o3__h08.json",
+    "mae": 10.327018903786739,
+    "baseline_mae": 11.707550578034683,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_av_franca__o3__h24.json",
+    "mae": 12.402273665157095,
+    "baseline_mae": 13.582303113553113,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_av_franca__pm10__h08.json",
+    "mae": 2.6324281551183653,
+    "baseline_mae": 3.465811202126389,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_av_franca__pm10__h24.json",
+    "mae": 7.933838746579642,
+    "baseline_mae": 8.488805419546583,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_av_franca__pm2_5__h08.json",
+    "mae": 1.479993358471274,
+    "baseline_mae": 2.014829726959379,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Av. França",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_av_franca__pm2_5__h24.json",
+    "mae": 4.226240801746495,
+    "baseline_mae": 4.9235816299109185,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_bulevard_sud__so2__h08.json",
+    "mae": 0.5038163203279488,
+    "baseline_mae": 0.5319148936170213,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_bulevard_sud__so2__h24.json",
+    "mae": 0.4830611586347451,
+    "baseline_mae": 0.38317757009345793,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_bulevard_sud__no2__h08.json",
+    "mae": 8.065830725759296,
+    "baseline_mae": 9.658407079646018,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_bulevard_sud__no2__h24.json",
+    "mae": 8.090572029260285,
+    "baseline_mae": 7.009208103130755,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_bulevard_sud__o3__h08.json",
+    "mae": 12.082228322536778,
+    "baseline_mae": 13.367521610555048,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Bulevard Sud",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_bulevard_sud__o3__h24.json",
+    "mae": 12.78479897285661,
+    "baseline_mae": 14.203839869281046,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_centre__no2__h08.json",
+    "mae": 10.852006334437922,
+    "baseline_mae": 15.534985422740524,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_centre__no2__h24.json",
+    "mae": 10.41798973580217,
+    "baseline_mae": 10.939078751857355,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_centre__pm10__h08.json",
+    "mae": 3.5311102261447904,
+    "baseline_mae": 4.191508220040829,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_centre__pm10__h24.json",
+    "mae": 7.95344987789067,
+    "baseline_mae": 9.70076843192582,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_centre__pm2_5__h08.json",
+    "mae": 1.2571055003120344,
+    "baseline_mae": 1.591212003576134,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Centre",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_centre__pm2_5__h24.json",
+    "mae": 3.386162650035988,
+    "baseline_mae": 3.852921094597416,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_moli_del_sol__so2__h08.json",
+    "mae": 0.38209530826989857,
+    "baseline_mae": 0.1894150417827298,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_moli_del_sol__so2__h24.json",
+    "mae": 0.5094672910103021,
+    "baseline_mae": 0.32463768115942027,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_moli_del_sol__no2__h08.json",
+    "mae": 9.063727516215769,
+    "baseline_mae": 12.11229946524064,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_moli_del_sol__no2__h24.json",
+    "mae": 9.152813177123535,
+    "baseline_mae": 10.0,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_moli_del_sol__o3__h08.json",
+    "mae": 10.34948095740028,
+    "baseline_mae": 9.29114481409002,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_moli_del_sol__o3__h24.json",
+    "mae": 12.396811421613249,
+    "baseline_mae": 12.415097557647702,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_moli_del_sol__pm10__h08.json",
+    "mae": 1.5303420611194556,
+    "baseline_mae": 1.978677494242835,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_moli_del_sol__pm10__h24.json",
+    "mae": 4.176668071102006,
+    "baseline_mae": 4.805377018801093,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_moli_del_sol__pm2_5__h08.json",
+    "mae": 0.7344749014804726,
+    "baseline_mae": 0.9772825247175538,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Molí del Sol",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_moli_del_sol__pm2_5__h24.json",
+    "mae": 2.357975711723025,
+    "baseline_mae": 2.4875431518122784,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_pista_de_silla__so2__h08.json",
+    "mae": 0.9490506356395232,
+    "baseline_mae": 1.091164095371669,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_pista_de_silla__so2__h24.json",
+    "mae": 0.889813152646936,
+    "baseline_mae": 0.7281831187410587,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_pista_de_silla__no2__h08.json",
+    "mae": 11.862521138788098,
+    "baseline_mae": 16.284712482468443,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_pista_de_silla__no2__h24.json",
+    "mae": 11.165125934964262,
+    "baseline_mae": 10.629470672389127,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_pista_de_silla__o3__h08.json",
+    "mae": 8.425618453281679,
+    "baseline_mae": 8.154412720067564,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_pista_de_silla__o3__h24.json",
+    "mae": 9.30114840302506,
+    "baseline_mae": 9.371853622899648,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_pista_de_silla__pm10__h08.json",
+    "mae": 1.5561821438398502,
+    "baseline_mae": 1.5832367737938393,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_pista_de_silla__pm10__h24.json",
+    "mae": 5.304080772902986,
+    "baseline_mae": 3.9604820909251583,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_pista_de_silla__pm2_5__h08.json",
+    "mae": 1.0782548531791527,
+    "baseline_mae": 1.4338890653428698,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Pista de Silla",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_pista_de_silla__pm2_5__h24.json",
+    "mae": 3.3505538598140463,
+    "baseline_mae": 3.5860030246794556,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_politecnic__so2__h08.json",
+    "mae": 0.08339626108790484,
+    "baseline_mae": 0.01721664275466284,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_politecnic__so2__h24.json",
+    "mae": 0.09287041672019773,
+    "baseline_mae": 0.01762114537444934,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_politecnic__no2__h08.json",
+    "mae": 9.286020496012178,
+    "baseline_mae": 10.859397417503587,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_politecnic__no2__h24.json",
+    "mae": 8.946305481617793,
+    "baseline_mae": 8.916299559471366,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_politecnic__o3__h08.json",
+    "mae": 10.158152758548711,
+    "baseline_mae": 10.119834428024083,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_politecnic__o3__h24.json",
+    "mae": 10.896276754608229,
+    "baseline_mae": 12.146953781512604,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_politecnic__pm10__h08.json",
+    "mae": 1.6947871641751044,
+    "baseline_mae": 2.1300712776862616,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_politecnic__pm10__h24.json",
+    "mae": 4.507124425177189,
+    "baseline_mae": 5.111438161246795,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_politecnic__pm2_5__h08.json",
+    "mae": 0.9773927164355867,
+    "baseline_mae": 1.3133854457515974,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Politècnic",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_politecnic__pm2_5__h24.json",
+    "mae": 2.935255698449385,
+    "baseline_mae": 3.2610214316200232,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "SO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_vivers__so2__h08.json",
+    "mae": 0.43555455290306844,
+    "baseline_mae": 0.40440165061898214,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "SO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_vivers__so2__h24.json",
+    "mae": 0.43815479157173304,
+    "baseline_mae": 0.273876404494382,
+    "beats_baseline_mae": false,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_vivers__no2__h08.json",
+    "mae": 11.538223594164256,
+    "baseline_mae": 16.119669876203577,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_vivers__no2__h24.json",
+    "mae": 10.772712807206656,
+    "baseline_mae": 10.896067415730338,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "O3",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_vivers__o3__h08.json",
+    "mae": 10.687157051843215,
+    "baseline_mae": 12.123760932944608,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València - Vivers",
+    "pollutant": "O3",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_vivers__o3__h24.json",
+    "mae": 12.298613204383505,
+    "baseline_mae": 13.286409696006357,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "NO2",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_olivereta__no2__h08.json",
+    "mae": 13.312805319731462,
+    "baseline_mae": 21.61572052401747,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "NO2",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_olivereta__no2__h24.json",
+    "mae": 12.394019415954718,
+    "baseline_mae": 12.671130952380953,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "PM10",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_olivereta__pm10__h08.json",
+    "mae": 2.691674743122036,
+    "baseline_mae": 3.8672093173169064,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "PM10",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_olivereta__pm10__h24.json",
+    "mae": 6.7287603691880875,
+    "baseline_mae": 9.018888578592106,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "PM2.5",
+    "horizon_hours": 8,
+    "model_path": "models/builded/model__valencia_olivereta__pm2_5__h08.json",
+    "mae": 1.2611464083559727,
+    "baseline_mae": 1.797093110887359,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  },
+  {
+    "station": "València Olivereta",
+    "pollutant": "PM2.5",
+    "horizon_hours": 24,
+    "model_path": "models/builded/model__valencia_olivereta__pm2_5__h24.json",
+    "mae": 3.6547486352737066,
+    "baseline_mae": 4.193067864179627,
+    "beats_baseline_mae": true,
+    "trained_at_utc": "2026-06-23T02:31:40+00:00"
+  }
+]
