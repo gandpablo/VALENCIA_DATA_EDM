@@ -1,0 +1,9 @@
+{
+  "last_scrape_utc": "2026-06-23T07:00:00+00:00",
+  "last_scrape_path": "data/scraped/history/2026-06-23_09-00.csv",
+  "last_prediction_utc": "2026-06-23T07:02:00+00:00",
+  "last_prediction_path": "predictions/history/2026-06-23_09-00.csv",
+  "last_retrain_utc": "2026-06-23T07:05:00+00:00",
+  "last_retrain_scrape_count": 14,
+  "active_model_version": "2026-06-23T02:31:40+00:00"
+}
