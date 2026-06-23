@@ -423,10 +423,6 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
           .map-frame {{ position:relative; height:815px; overflow:hidden; border:1px solid rgba(125,249,255,.30); border-radius:24px; box-shadow:0 30px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.08); background:#07111f; }}
           #map {{ position:absolute; inset:0; z-index:1; background:#07111f; }}
           .map-frame::after {{ content:""; pointer-events:none; position:absolute; inset:0; z-index:600; background:radial-gradient(circle at 20% 18%, rgba(34,211,238,.18), transparent 28%), radial-gradient(circle at 84% 72%, rgba(59,130,246,.15), transparent 28%), linear-gradient(180deg, rgba(2,6,23,.10), rgba(2,6,23,.22)); mix-blend-mode:screen; }}
-          .hud {{ position:absolute; left:22px; top:20px; z-index:1000; max-width:390px; padding:16px 18px; border:1px solid rgba(125,249,255,.28); border-radius:18px; background:rgba(2,6,23,.82); box-shadow:0 18px 44px rgba(0,0,0,.28); backdrop-filter:blur(12px); pointer-events:none; }}
-          .hud small {{ display:block; color:#67e8f9; text-transform:uppercase; font-size:11px; margin-bottom:7px; }}
-          .hud h2 {{ margin:0; color:#f8feff; font-size:28px; line-height:1.08; }}
-          .hud p {{ margin:8px 0 0; color:#cbd5e1; font-size:13px; }}
           .legend {{ position:absolute; right:18px; bottom:18px; z-index:1000; display:flex; gap:10px; flex-wrap:wrap; max-width:520px; padding:11px 13px; border:1px solid rgba(125,249,255,.22); border-radius:999px; background:rgba(2,6,23,.76); color:#e2e8f0; font-size:12px; backdrop-filter:blur(10px); pointer-events:none; }}
           .legend span {{ display:inline-flex; align-items:center; gap:6px; }}
           .legend i {{ width:10px; height:10px; border-radius:50%; display:inline-block; }}
@@ -441,11 +437,6 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
       <body>
         <div class="map-frame">
           <div id="map"></div>
-          <div class="hud">
-            <small>{html.escape(pollutant)}</small>
-            <h2>{'Valores actuales' if mode == 'Actual' else 'Prediccion +8h'}</h2>
-            <p>Mapa interactivo de Valencia. Amplia, desplaza y pulsa cualquier punto para ver el detalle.</p>
-          </div>
           <div class="legend">
             <span><i style="background:#50f0e6"></i>buena</span>
             <span><i style="background:#50ccaa"></i>raz. buena</span>
