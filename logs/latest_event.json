@@ -1,7 +1,0 @@
-{
-  "timestamp": "2026-06-23T07:05:00+00:00",
-  "event": "retrain",
-  "status": "ok",
-  "duration_seconds": 95.0,
-  "message": "64 models available"
-}
