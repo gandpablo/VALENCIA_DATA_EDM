@@ -1,8 +1,0 @@
-{
-  "trained_at_utc": "2026-06-23T02:31:40+00:00",
-  "models": 64,
-  "avg_mae": 5.959540690107118,
-  "avg_baseline_mae": 6.778645407187162,
-  "avg_mae_improvement_pct": -8.015965057474762,
-  "models_beating_baseline": 47
-}
