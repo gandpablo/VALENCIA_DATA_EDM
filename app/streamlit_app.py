@@ -34,6 +34,37 @@ EXTRA_COORDS = {
     "PATRAIX": (39.4623, -0.3958),
 }
 HISTORICAL_SCRAPER_STATIONS = set(NAME_MAP)
+QUALITY_LEVELS = [
+    "Buena",
+    "Razonablemente buena",
+    "Regular",
+    "Desfavorable",
+    "Muy desfavorable",
+    "Extremadamente desfavorable",
+]
+QUALITY_COLORS = {
+    "Buena": "#50f0e6",
+    "Razonablemente buena": "#50ccaa",
+    "Regular": "#f0e641",
+    "Desfavorable": "#ff5050",
+    "Muy desfavorable": "#960032",
+    "Extremadamente desfavorable": "#7d2181",
+    "No hay datos": "#64748b",
+}
+QUALITY_THRESHOLDS = {
+    "SO2": [100, 200, 350, 500, 750, 1250],
+    "NO2": [40, 90, 120, 230, 340, 1000],
+    "O3": [50, 100, 130, 240, 380, 800],
+    "PM-10": [20, 40, 50, 100, 150, 1200],
+    "PM-2.5": [10, 20, 25, 50, 75, 800],
+}
+POLLUTANT_NAMES = {
+    "SO2": "Dioxido de Azufre",
+    "NO2": "Dioxido de Nitrogeno",
+    "O3": "Ozono",
+    "PM-10": "Particulas < 10 micras",
+    "PM-2.5": "Particulas < 2.5 micras",
+}
 
 
 st.set_page_config(page_title="Valencia Air Lab", layout="wide", initial_sidebar_state="collapsed")
@@ -60,29 +91,46 @@ def load_snapshot(path: Path) -> pd.DataFrame:
     return df
 
 
-def color_for_value(pollutant: str, value: float | None) -> str:
+@st.cache_data
+def load_scraped_history() -> pd.DataFrame:
+    rows = []
+    history_dir = SCRAPED_DIR / "history"
+    for path in sorted(history_dir.glob("*.csv")):
+        timestamp = pd.to_datetime(path.stem, format="%Y-%m-%d_%H-%M", errors="coerce")
+        if pd.isna(timestamp):
+            continue
+        frame = pd.read_csv(path, encoding="utf-8-sig")
+        frame["timestamp"] = timestamp
+        rows.append(frame)
+
+    if not rows:
+        return pd.DataFrame(columns=["timestamp", "station_display", "station", *POLLUTANTS])
+
+    history = pd.concat(rows, ignore_index=True)
+    history["station_display"] = history["µg/m3"]
+    history["station"] = history["µg/m3"].map(NAME_MAP).fillna(history["µg/m3"])
+    for col in POLLUTANTS:
+        history[col] = pd.to_numeric(history[col], errors="coerce")
+    return history.dropna(subset=["timestamp"]).sort_values("timestamp")
+
+
+def quality_for_value(pollutant: str, value: float | None) -> str:
     if pd.isna(value):
-        return "#64748b"
-    limits = {
-        "NO2": (25, 50, 80),
-        "O3": (50, 80, 110),
-        "SO2": (5, 15, 40),
-        "PM-10": (20, 35, 50),
-        "PM-2.5": (8, 14, 25),
-    }[pollutant]
-    if value < limits[0]:
-        return "#22c55e"
-    if value < limits[1]:
-        return "#eab308"
-    if value < limits[2]:
-        return "#f97316"
-    return "#ef4444"
+        return "No hay datos"
+    for level, upper in zip(QUALITY_LEVELS, QUALITY_THRESHOLDS[pollutant]):
+        if float(value) <= upper:
+            return level
+    return "Extremadamente desfavorable"
+
+
+def color_for_value(pollutant: str, value: float | None) -> str:
+    return QUALITY_COLORS[quality_for_value(pollutant, value)]
 
 
 def radius_for_value(pollutant: str, value: float | None) -> int:
     if pd.isna(value):
         return 17
-    max_reasonable = {"NO2": 100, "O3": 120, "SO2": 80, "PM-10": 60, "PM-2.5": 35}[pollutant]
+    max_reasonable = QUALITY_THRESHOLDS[pollutant][3]
     return int(17 + min(float(value) / max_reasonable, 1.0) * 17)
 
 
@@ -95,8 +143,9 @@ def map_points(df: pd.DataFrame, pollutant: str, mode: str) -> list[dict]:
         value = row[pollutant]
         missing_prediction = mode == "Prediccion" and row["station_display"] not in HISTORICAL_SCRAPER_STATIONS
         if missing_prediction:
-            value = np.nan
+            continue
         lat, lon = coords[row["station"]]
+        quality = quality_for_value(pollutant, value)
         points.append(
             {
                 "label": row["station_display"],
@@ -108,7 +157,7 @@ def map_points(df: pd.DataFrame, pollutant: str, mode: str) -> list[dict]:
                     if missing_prediction
                     else "sin dato"
                     if pd.isna(value)
-                    else f"{float(value):.1f} ug/m3"
+                    else f"{float(value):.1f} ug/m3 · {quality}"
                 ),
                 "color": color_for_value(pollutant, value),
                 "radius": radius_for_value(pollutant, value),
@@ -191,6 +240,39 @@ def style_page() -> None:
           }
           .status-item span { display: block; color: #94a3b8; font-size: 10px; text-transform: uppercase; }
           .status-item b { display: block; margin-top: 2px; color: #f8feff; font-size: 15px; }
+          .quality-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            margin-right: 6px;
+            box-shadow: 0 0 14px currentColor;
+          }
+          .history-card {
+            min-height: 815px;
+            padding: 20px;
+            border: 1px solid rgba(125,249,255,.30);
+            border-radius: 24px;
+            background:
+              radial-gradient(circle at 14% 8%, rgba(34,211,238,.16), transparent 28%),
+              linear-gradient(135deg, rgba(2,6,23,.76), rgba(7,17,31,.88));
+            box-shadow: 0 30px 90px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06);
+          }
+          .history-title {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 12px;
+          }
+          .history-title h2 { margin: 0; color: #f8feff; font-size: 28px; }
+          .history-title p { margin: 7px 0 0; color: #cbd5e1; font-size: 13px; }
+          .threshold-note {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.45;
+            margin-top: 15px;
+          }
           .chat-bubble-user {
             margin: 10px 0 6px auto;
             padding: 10px 12px;
@@ -255,10 +337,12 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
             <p>Mapa interactivo de Valencia. Amplia, desplaza y pulsa cualquier punto para ver el detalle.</p>
           </div>
           <div class="legend">
-            <span><i style="background:#22c55e"></i>bajo</span>
-            <span><i style="background:#eab308"></i>medio</span>
-            <span><i style="background:#f97316"></i>alto</span>
-            <span><i style="background:#ef4444"></i>muy alto</span>
+            <span><i style="background:#50f0e6"></i>buena</span>
+            <span><i style="background:#50ccaa"></i>raz. buena</span>
+            <span><i style="background:#f0e641"></i>regular</span>
+            <span><i style="background:#ff5050"></i>desfavorable</span>
+            <span><i style="background:#960032"></i>muy desf.</span>
+            <span><i style="background:#7d2181"></i>extrema</span>
             <span><i style="background:#64748b"></i>sin dato</span>
           </div>
         </div>
@@ -328,13 +412,18 @@ def chat_panel() -> None:
 
 def toolbar() -> tuple[str, str]:
     st.markdown('<div class="control-bar">', unsafe_allow_html=True)
-    col1, col2 = st.columns([3.6, 1.7], gap="small")
+    col1, col2 = st.columns([3.6, 2.2], gap="small")
     with col1:
         st.markdown('<div class="control-label">Contaminante</div>', unsafe_allow_html=True)
         pollutant = st.pills("Contaminante", POLLUTANTS, default="NO2", label_visibility="collapsed")
     with col2:
         st.markdown('<div class="control-label">Vista</div>', unsafe_allow_html=True)
-        mode = st.segmented_control("Vista", ["Actual", "Prediccion"], default="Actual", label_visibility="collapsed")
+        mode = st.segmented_control(
+            "Vista",
+            ["Actual", "Prediccion", "Historico"],
+            default="Actual",
+            label_visibility="collapsed",
+        )
     st.markdown("</div>", unsafe_allow_html=True)
     return pollutant or "NO2", mode or "Actual"
 
@@ -342,18 +431,96 @@ def toolbar() -> tuple[str, str]:
 def status_strip(df: pd.DataFrame, pollutant: str, mode: str) -> None:
     values = df[pollutant].dropna()
     mean = f"{values.mean():.1f} ug/m3" if len(values) else "sin datos"
-    maximum = f"{values.max():.1f} ug/m3" if len(values) else "sin datos"
+    if len(values):
+        max_index = values.idxmax()
+        maximum = f"{values.max():.1f} ug/m3"
+        max_station = df.loc[max_index, "station_display"]
+        worst_quality = quality_for_value(pollutant, values.max())
+        good_count = sum(quality_for_value(pollutant, value) == "Buena" for value in values)
+    else:
+        maximum = "sin datos"
+        max_station = "-"
+        worst_quality = "No hay datos"
+        good_count = 0
+    quality_color = QUALITY_COLORS[worst_quality]
     st.markdown(
         f"""
         <div class="status-strip">
           <div class="status-item"><span>Media</span><b>{html.escape(mean)}</b></div>
-          <div class="status-item"><span>Maximo</span><b>{html.escape(maximum)}</b></div>
-          <div class="status-item"><span>Estaciones con dato</span><b>{len(values)}/11</b></div>
-          <div class="status-item"><span>Vista</span><b>{html.escape(mode)}</b></div>
+          <div class="status-item"><span>Maximo</span><b>{html.escape(maximum)}</b><span>{html.escape(str(max_station))}</span></div>
+          <div class="status-item"><span>Peor calidad</span><b><i class="quality-dot" style="background:{quality_color}; color:{quality_color};"></i>{html.escape(worst_quality)}</b></div>
+          <div class="status-item"><span>Buena calidad</span><b>{good_count}/{len(values)}</b></div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+
+def historical_panel(pollutant: str) -> None:
+    history = load_scraped_history()
+    station_options = sorted(history["station_display"].dropna().unique()) if not history.empty else []
+
+    st.markdown('<div class="history-card">', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="history-title">
+          <div>
+            <h2>Historico scrapeado</h2>
+            <p>Evolucion de los ultimos CSV almacenados en <b>data/scraped/history</b> y publicados en GitHub.</p>
+          </div>
+          <div style="color:#67e8f9;font-size:12px;text-transform:uppercase;">{html.escape(POLLUTANT_NAMES[pollutant])}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not station_options:
+        st.warning("Todavia no hay historico scrapeado disponible.")
+        st.markdown("</div>", unsafe_allow_html=True)
+        return
+
+    selected_station = st.selectbox("Estacion", station_options, label_visibility="collapsed")
+    station_history = history[history["station_display"] == selected_station][["timestamp", pollutant]].dropna()
+    station_history = station_history.sort_values("timestamp")
+
+    if station_history.empty:
+        st.info("No hay datos de este contaminante para la estacion seleccionada.")
+        st.markdown("</div>", unsafe_allow_html=True)
+        return
+
+    latest_value = float(station_history[pollutant].iloc[-1])
+    latest_quality = quality_for_value(pollutant, latest_value)
+    latest_color = QUALITY_COLORS[latest_quality]
+    period_mean = float(station_history[pollutant].mean())
+    period_max = float(station_history[pollutant].max())
+
+    st.markdown(
+        f"""
+        <div class="status-strip">
+          <div class="status-item"><span>Ultimo valor</span><b>{latest_value:.1f} ug/m3</b></div>
+          <div class="status-item"><span>Calidad actual</span><b><i class="quality-dot" style="background:{latest_color}; color:{latest_color};"></i>{html.escape(latest_quality)}</b></div>
+          <div class="status-item"><span>Media historica</span><b>{period_mean:.1f} ug/m3</b></div>
+          <div class="status-item"><span>Maximo historico</span><b>{period_max:.1f} ug/m3</b></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    chart_data = station_history.rename(columns={"timestamp": "Fecha", pollutant: "Valor"}).set_index("Fecha")
+    st.line_chart(chart_data, height=500, use_container_width=True)
+    st.markdown(
+        """
+        <div class="threshold-note">
+          Umbrales de color basados en el Indice Nacional de Calidad del Aire
+          (Orden TEC/351/2019 y Resolucion de 2 de septiembre de 2020).
+          Elaboracion propia con datos del
+          <a href="https://www.valencia.es/val/qualitataire/contaminacio-atmosferica" target="_blank" style="color:#67e8f9;">Servicio de mejora climatica</a>.
+          ug/m3 = microgramos por metro cubico; PM-10 y PM-2.5 = particulas en suspension.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def dashboard() -> None:
@@ -371,9 +538,12 @@ def dashboard() -> None:
 
     with main:
         pollutant, mode = toolbar()
-        shown = current if mode == "Actual" else prediction
-        status_strip(shown, pollutant, mode)
-        leaflet_map(map_points(shown, pollutant, mode), pollutant, mode)
+        if mode == "Historico":
+            historical_panel(pollutant)
+        else:
+            shown = current if mode == "Actual" else prediction
+            status_strip(shown, pollutant, mode)
+            leaflet_map(map_points(shown, pollutant, mode), pollutant, mode)
 
 
 def main() -> None:
