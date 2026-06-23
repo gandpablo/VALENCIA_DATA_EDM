@@ -70,5 +70,9 @@
   {
     "path": "data/scraped/history/2026-06-23_12-27.csv",
     "timestamp": "2026-06-23_12-27"
+  },
+  {
+    "path": "data/scraped/history/2026-06-23_12-34.csv",
+    "timestamp": "2026-06-23_12-34"
   }
 ]
