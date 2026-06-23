@@ -166,9 +166,9 @@ def color_for_value(pollutant: str, value: float | None) -> str:
 
 def radius_for_value(pollutant: str, value: float | None) -> int:
     if pd.isna(value):
-        return 17
+        return 24
     max_reasonable = QUALITY_THRESHOLDS[pollutant][3]
-    return int(17 + min(float(value) / max_reasonable, 1.0) * 17)
+    return int(24 + min(float(value) / max_reasonable, 1.0) * 22)
 
 
 def map_points(df: pd.DataFrame, pollutant: str, mode: str) -> list[dict]:
@@ -317,6 +317,30 @@ def style_page() -> None:
           }
           .history-title h2 { margin: 0; color: #f8feff; font-size: 28px; }
           .history-title p { margin: 7px 0 0; color: #cbd5e1; font-size: 13px; }
+          .station-picker {
+            margin-bottom: 10px;
+            padding: 14px 16px;
+            border: 1px solid rgba(125,249,255,.20);
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(8,47,73,.58), rgba(2,6,23,.62));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+          }
+          .station-picker strong {
+            display: block;
+            color: #f8feff;
+            font-size: 15px;
+            margin-bottom: 3px;
+          }
+          .station-picker span {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+          }
+          div[data-testid="stSelectbox"] label {
+            color: #67e8f9 !important;
+            text-transform: uppercase;
+            font-size: 11px !important;
+          }
           .info-grid {
             display: grid;
             grid-template-columns: 1.15fr .85fr;
@@ -398,12 +422,12 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
           html, body {{ margin:0; padding:0; background:#020617; font-family:Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; }}
           .map-frame {{ position:relative; height:815px; overflow:hidden; border:1px solid rgba(125,249,255,.30); border-radius:24px; box-shadow:0 30px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.08); background:#07111f; }}
           #map {{ position:absolute; inset:0; z-index:1; background:#07111f; }}
-          .map-frame::after {{ content:""; pointer-events:none; position:absolute; inset:0; z-index:3; background:radial-gradient(circle at 20% 18%, rgba(34,211,238,.18), transparent 28%), radial-gradient(circle at 84% 72%, rgba(59,130,246,.15), transparent 28%), linear-gradient(180deg, rgba(2,6,23,.10), rgba(2,6,23,.22)); mix-blend-mode:screen; }}
-          .hud {{ position:absolute; left:22px; top:20px; z-index:5; max-width:390px; padding:16px 18px; border:1px solid rgba(125,249,255,.28); border-radius:18px; background:rgba(2,6,23,.76); box-shadow:0 18px 44px rgba(0,0,0,.28); backdrop-filter:blur(12px); }}
+          .map-frame::after {{ content:""; pointer-events:none; position:absolute; inset:0; z-index:600; background:radial-gradient(circle at 20% 18%, rgba(34,211,238,.18), transparent 28%), radial-gradient(circle at 84% 72%, rgba(59,130,246,.15), transparent 28%), linear-gradient(180deg, rgba(2,6,23,.10), rgba(2,6,23,.22)); mix-blend-mode:screen; }}
+          .hud {{ position:absolute; left:22px; top:20px; z-index:1000; max-width:390px; padding:16px 18px; border:1px solid rgba(125,249,255,.28); border-radius:18px; background:rgba(2,6,23,.82); box-shadow:0 18px 44px rgba(0,0,0,.28); backdrop-filter:blur(12px); pointer-events:none; }}
           .hud small {{ display:block; color:#67e8f9; text-transform:uppercase; font-size:11px; margin-bottom:7px; }}
           .hud h2 {{ margin:0; color:#f8feff; font-size:28px; line-height:1.08; }}
           .hud p {{ margin:8px 0 0; color:#cbd5e1; font-size:13px; }}
-          .legend {{ position:absolute; right:18px; bottom:18px; z-index:5; display:flex; gap:10px; flex-wrap:wrap; max-width:520px; padding:11px 13px; border:1px solid rgba(125,249,255,.22); border-radius:999px; background:rgba(2,6,23,.72); color:#e2e8f0; font-size:12px; backdrop-filter:blur(10px); }}
+          .legend {{ position:absolute; right:18px; bottom:18px; z-index:1000; display:flex; gap:10px; flex-wrap:wrap; max-width:520px; padding:11px 13px; border:1px solid rgba(125,249,255,.22); border-radius:999px; background:rgba(2,6,23,.76); color:#e2e8f0; font-size:12px; backdrop-filter:blur(10px); pointer-events:none; }}
           .legend span {{ display:inline-flex; align-items:center; gap:6px; }}
           .legend i {{ width:10px; height:10px; border-radius:50%; display:inline-block; }}
           .leaflet-control-zoom a {{ background:rgba(2,6,23,.82) !important; color:#e0f2fe !important; border-color:rgba(125,249,255,.22) !important; }}
@@ -411,7 +435,7 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
           .popup-title {{ color:#fff; font-weight:800; font-size:15px; margin-bottom:4px; }}
           .popup-subtitle {{ color:#93c5fd; font-size:12px; margin-bottom:10px; }}
           .popup-value {{ color:#a7f3d0; font-weight:800; font-size:22px; }}
-          .marker-label {{ color:#e5f8ff; font-weight:800; text-shadow:0 2px 10px rgba(0,0,0,.75); background:rgba(2,6,23,.72); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:2px 8px; }}
+          .pulse-ring {{ filter: drop-shadow(0 0 16px rgba(103,232,249,.35)); }}
         </style>
       </head>
       <body>
@@ -433,18 +457,16 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
         </div>
         <script>
           const points = {json.dumps(points, ensure_ascii=False)};
-          const map = L.map('map', {{ zoomControl:true, scrollWheelZoom:true, preferCanvas:true }}).setView([39.4699, -0.3763], 12.5);
+          const map = L.map('map', {{ zoomControl:true, scrollWheelZoom:true, preferCanvas:true }}).setView([39.4699, -0.3763], 12.35);
           L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ maxZoom:19, attribution:'&copy; OpenStreetMap' }}).addTo(map);
           const bounds = [];
           points.forEach((point) => {{
             const marker = L.circleMarker([point.lat, point.lon], {{
-              radius: point.radius, color:'#f8fafc', weight:2, fillColor:point.color, fillOpacity:.82, opacity:.95
+              radius: point.radius, color:'#f8fafc', weight:2.5, fillColor:point.color, fillOpacity:.82, opacity:.98, className:'pulse-ring'
             }}).addTo(map);
-            marker.bindTooltip(`<span class="marker-label">${{point.label}}</span>`, {{ permanent:true, direction:'top', offset:[0,-18], opacity:.96 }});
             marker.bindPopup(`<div class="popup-title">${{point.label}}</div><div class="popup-subtitle">${{point.station}}</div><div class="popup-value">${{point.value_label}}</div>`);
             bounds.push([point.lat, point.lon]);
           }});
-          if (bounds.length > 0) map.fitBounds(bounds, {{ padding:[55,55], maxZoom:13 }});
         </script>
       </body>
     </html>
@@ -681,7 +703,29 @@ def historical_panel(pollutant: str) -> None:
         st.warning("Todavia no hay historico scrapeado disponible.")
         return
 
-    selected_station = st.selectbox("Estacion", station_options, label_visibility="collapsed", key=f"station_{pollutant}")
+    st.markdown(
+        """
+        <div class="station-picker">
+          <strong>Zona monitorizada</strong>
+          <span>Selecciona una estacion para consultar la evolucion temporal del contaminante activo.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    picker_col, info_col = st.columns([2.4, 1], gap="small")
+    with picker_col:
+        selected_station = st.selectbox("Estacion", station_options, label_visibility="visible", key=f"station_{pollutant}")
+    with info_col:
+        st.markdown(
+            f"""
+            <div class="status-item">
+              <span>Contaminante</span>
+              <b>{html.escape(pollutant)}</b>
+              <span>{html.escape(POLLUTANT_NAMES[pollutant])}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     station_history = history[history["station_display"] == selected_station][["timestamp", pollutant]].dropna()
     station_history = station_history.sort_values("timestamp")
 
