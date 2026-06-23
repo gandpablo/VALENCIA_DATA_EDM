@@ -1,0 +1,6 @@
+# Edit with: crontab -e
+# Adjust /home/jetson/valencia-air-runner to the folder where you copy jetson_runner.
+
+17 1,9,17 * * * cd /home/jetson/valencia-air-runner && .venv/bin/python scripts/jetson_pipeline.py --mode scrape >> logs/pipeline.log 2>&1
+43 2 * * * cd /home/jetson/valencia-air-runner && .venv/bin/python scripts/jetson_pipeline.py --mode retrain >> logs/retrain.log 2>&1
+
