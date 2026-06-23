@@ -59,6 +59,7 @@ QUALITY_THRESHOLDS = {
     "PM-10": [20, 40, 50, 100, 150, 1200],
     "PM-2.5": [10, 20, 25, 50, 75, 800],
 }
+QUALITY_RANK = {level: index for index, level in enumerate(QUALITY_LEVELS)}
 POLLUTANT_NAMES = {
     "SO2": "Dioxido de Azufre",
     "NO2": "Dioxido de Nitrogeno",
@@ -85,11 +86,26 @@ def station_coords() -> dict[str, tuple[float, float]]:
 @st.cache_data
 def load_snapshot(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, encoding="utf-8-sig")
+    if df.empty:
+        fallback = latest_valid_history_file(path.parent / "history")
+        if fallback is not None:
+            df = pd.read_csv(fallback, encoding="utf-8-sig")
     df["station_display"] = df["µg/m3"]
     df["station"] = df["µg/m3"].map(NAME_MAP).fillna(df["µg/m3"])
     for col in POLLUTANTS:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
+
+
+def latest_valid_history_file(history_dir: Path) -> Path | None:
+    for path in sorted(history_dir.glob("*.csv"), reverse=True):
+        try:
+            frame = pd.read_csv(path, encoding="utf-8-sig")
+        except (OSError, pd.errors.EmptyDataError):
+            continue
+        if not frame.empty:
+            return path
+    return None
 
 
 @st.cache_data
@@ -101,6 +117,8 @@ def load_scraped_history() -> pd.DataFrame:
         if pd.isna(timestamp):
             continue
         frame = pd.read_csv(path, encoding="utf-8-sig")
+        if frame.empty:
+            continue
         frame["timestamp"] = timestamp
         rows.append(frame)
 
@@ -435,6 +453,8 @@ def leaflet_map(points: list[dict], pollutant: str, mode: str) -> None:
 
 
 def access_screen() -> None:
+    if "pipeline_error" in st.session_state:
+        st.error(st.session_state["pipeline_error"])
     st.markdown(
         """
         <div class="access-shell">
@@ -450,8 +470,13 @@ def access_screen() -> None:
     with center:
         if st.button("ACCEDER", type="primary", use_container_width=True):
             with st.spinner("Scrapeando, prediciendo y subiendo a GitHub..."):
-                result = run_manual_pipeline()
+                try:
+                    result = run_manual_pipeline()
+                except Exception as exc:
+                    st.session_state["pipeline_error"] = f"No se ha podido actualizar ahora: {exc}"
+                    st.rerun()
             st.cache_data.clear()
+            st.session_state.pop("pipeline_error", None)
             st.session_state["access_granted"] = True
             st.session_state["last_pipeline_result"] = result
             st.rerun()
@@ -486,7 +511,7 @@ def toolbar() -> tuple[str, str]:
         st.markdown('<div class="control-label">Vista</div>', unsafe_allow_html=True)
         mode = st.segmented_control(
             "Vista",
-            ["Actual", "Prediccion", "Historico", "Info"],
+            ["Actual", "Prediccion", "Historico", "KPIs", "Info"],
             default="Actual",
             label_visibility="collapsed",
         )
@@ -529,6 +554,108 @@ def status_strip(df: pd.DataFrame, pollutant: str, mode: str) -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+def current_kpis_panel(current: pd.DataFrame) -> None:
+    summaries = []
+    distribution_rows = []
+    all_quality = []
+    total_possible = len(current) * len(POLLUTANTS)
+    total_with_data = 0
+
+    for pollutant in POLLUTANTS:
+        values = current[pollutant].dropna()
+        total_with_data += len(values)
+        if len(values):
+            qualities = values.map(lambda value: quality_for_value(pollutant, value))
+            max_index = values.idxmax()
+            worst_quality = max(qualities, key=lambda level: QUALITY_RANK[level])
+            desired_count = int(qualities.isin(["Buena", "Razonablemente buena"]).sum())
+            regular_or_worse = int(len(values) - desired_count)
+            summaries.append(
+                {
+                    "Contaminante": pollutant,
+                    "Nombre": POLLUTANT_NAMES[pollutant],
+                    "Media": f"{values.mean():.1f} ug/m3",
+                    "Maximo": f"{values.max():.1f} ug/m3",
+                    "Estacion maximo": current.loc[max_index, "station_display"],
+                    "Peor calidad": worst_quality,
+                    "Calidad deseada": f"{desired_count}/{len(values)}",
+                    "Regular o peor": regular_or_worse,
+                    "Sin datos": len(current) - len(values),
+                }
+            )
+            for level in QUALITY_LEVELS:
+                count = int((qualities == level).sum())
+                if count:
+                    distribution_rows.append({"Contaminante": pollutant, "Calidad": level, "Registros": count})
+            all_quality.extend(qualities.tolist())
+        else:
+            summaries.append(
+                {
+                    "Contaminante": pollutant,
+                    "Nombre": POLLUTANT_NAMES[pollutant],
+                    "Media": "sin datos",
+                    "Maximo": "sin datos",
+                    "Estacion maximo": "-",
+                    "Peor calidad": "No hay datos",
+                    "Calidad deseada": "0/0",
+                    "Regular o peor": 0,
+                    "Sin datos": len(current),
+                }
+            )
+
+    desired_total = sum(level in {"Buena", "Razonablemente buena"} for level in all_quality)
+    regular_or_worse_total = len(all_quality) - desired_total
+    no_data_total = total_possible - total_with_data
+    worst_global = max(all_quality, key=lambda level: QUALITY_RANK[level]) if all_quality else "No hay datos"
+    worst_color = QUALITY_COLORS[worst_global]
+    desired_pct = desired_total / len(all_quality) * 100 if all_quality else 0
+
+    st.markdown(
+        f"""
+        <section class="history-card">
+          <div class="history-title" style="margin-bottom:0;">
+            <div>
+              <h2>KPIs actuales</h2>
+              <p>Resumen del ultimo snapshot valido de contaminacion actual.</p>
+            </div>
+            <div style="color:#67e8f9;font-size:12px;text-transform:uppercase;">{total_with_data} mediciones con dato</div>
+          </div>
+        </section>
+        <div class="status-strip">
+          <div class="status-item"><span>Estaciones</span><b>{len(current)}</b></div>
+          <div class="status-item"><span>Mediciones con dato</span><b>{total_with_data}/{total_possible}</b></div>
+          <div class="status-item"><span>Calidad deseada</span><b>{desired_pct:.0f}%</b><span>{desired_total}/{len(all_quality)}</span></div>
+          <div class="status-item"><span>Regular o peor</span><b>{regular_or_worse_total}</b></div>
+          <div class="status-item"><span>Sin datos</span><b>{no_data_total}</b></div>
+          <div class="status-item"><span>Peor calidad global</span><b><i class="quality-dot" style="background:{worst_color}; color:{worst_color};"></i>{html.escape(worst_global)}</b></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    summary_df = pd.DataFrame(summaries)
+    st.dataframe(summary_df, hide_index=True, use_container_width=True, height=245)
+
+    distribution = pd.DataFrame(distribution_rows)
+    if not distribution.empty:
+        chart = (
+            alt.Chart(distribution)
+            .mark_bar(cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
+            .encode(
+                x=alt.X("Contaminante:N", title="Contaminante"),
+                y=alt.Y("Registros:Q", title="Numero de estaciones"),
+                color=alt.Color(
+                    "Calidad:N",
+                    scale=alt.Scale(domain=QUALITY_LEVELS, range=[QUALITY_COLORS[level] for level in QUALITY_LEVELS]),
+                    legend=alt.Legend(title="Calidad"),
+                ),
+                tooltip=["Contaminante:N", "Calidad:N", "Registros:Q"],
+            )
+            .properties(height=320)
+        )
+        st.altair_chart(chart, use_container_width=True)
 
 
 def historical_panel(pollutant: str) -> None:
@@ -689,36 +816,50 @@ def info_panel() -> None:
             """
         )
 
-    st.markdown(
-        f"""
-        <section class="info-panel">
-          <div class="history-title">
+    info_html = f"""
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          body {{ margin:0; background:transparent; font-family:Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; color:#e5f8ff; }}
+          .panel {{ min-height:790px; box-sizing:border-box; padding:20px; border:1px solid rgba(125,249,255,.30); border-radius:24px; background:radial-gradient(circle at 14% 8%, rgba(34,211,238,.16), transparent 28%), linear-gradient(135deg, rgba(2,6,23,.86), rgba(7,17,31,.94)); box-shadow:0 30px 90px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06); }}
+          .title {{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }}
+          h2 {{ margin:0; color:#f8feff; font-size:28px; }}
+          p {{ margin:7px 0 0; color:#cbd5e1; font-size:13px; line-height:1.45; }}
+          .tag {{ color:#67e8f9; font-size:12px; text-transform:uppercase; white-space:nowrap; }}
+          .grid {{ display:grid; grid-template-columns:1.15fr .85fr; gap:14px; }}
+          .box {{ border:1px solid rgba(125,249,255,.16); border-radius:16px; background:rgba(2,6,23,.46); padding:14px; }}
+          table {{ width:100%; border-collapse:collapse; color:#dbeafe; font-size:12px; }}
+          th, td {{ border-bottom:1px solid rgba(148,163,184,.16); padding:9px 8px; text-align:left; }}
+          th {{ color:#67e8f9; font-size:10px; text-transform:uppercase; }}
+          .dot, .quality-dot {{ display:inline-block; width:9px; height:9px; border-radius:999px; margin-right:6px; box-shadow:0 0 14px currentColor; }}
+          .abbr {{ display:grid; gap:9px; color:#cbd5e1; font-size:13px; line-height:1.38; }}
+          .note {{ color:#94a3b8; font-size:12px; line-height:1.45; margin-top:15px; }}
+          a {{ color:#67e8f9; }}
+        </style>
+      </head>
+      <body>
+        <section class="panel">
+          <div class="title">
             <div>
               <h2>Info calidad del aire</h2>
-              <p>Los colores del mapa, las predicciones y el historico se calculan con estos rangos de calidad del aire.</p>
+              <p>Los colores del mapa, las predicciones, los KPIs y el historico se calculan con estos rangos de calidad del aire.</p>
             </div>
-            <div style="color:#67e8f9;font-size:12px;text-transform:uppercase;">umbrales oficiales</div>
+            <div class="tag">umbrales oficiales</div>
           </div>
-          <div class="info-grid">
-            <div class="info-box">
-              <table class="quality-table">
+          <div class="grid">
+            <div class="box">
+              <table>
                 <thead>
-                  <tr>
-                    <th>Calidad del aire</th>
-                    {header_cells}
-                  </tr>
+                  <tr><th>Calidad del aire</th>{header_cells}</tr>
                 </thead>
-                <tbody>
-                  {''.join(rows)}
-                </tbody>
+                <tbody>{''.join(rows)}</tbody>
               </table>
-              <div class="threshold-note">
-                Rangos en µg/m3. ND significa que no se han recabado suficientes datos para establecer criterio.
-                Las estaciones sin dato para un contaminante no se muestran en el mapa.
-              </div>
+              <div class="note">Rangos en µg/m3. ND significa que no se han recabado suficientes datos para establecer criterio. Las estaciones sin dato para un contaminante no se muestran en el mapa.</div>
             </div>
-            <div class="info-box">
-              <div class="abbr-list">
+            <div class="box">
+              <div class="abbr">
                 <div><b>SO2</b> Dioxido de Azufre</div>
                 <div><b>NO2</b> Dioxido de Nitrogeno</div>
                 <div><b>O3</b> Ozono</div>
@@ -727,18 +868,14 @@ def info_panel() -> None:
                 <div><b>µg/m3</b> Microgramos por metro cubico</div>
                 <div><b>mg/m3</b> Miligramos por metro cubico</div>
               </div>
-              <div class="threshold-note">
-                Umbrales basados en el Indice Nacional de Calidad del Aire
-                (Orden TEC/351/2019, de 18 de marzo) y Resolucion de 2 de septiembre de 2020.
-                Elaboracion propia con datos proporcionados por el
-                <a href="https://www.valencia.es/val/qualitataire/contaminacio-atmosferica" target="_blank" style="color:#67e8f9;">Servicio de mejora climatica</a>.
-              </div>
+              <div class="note">Umbrales basados en el Indice Nacional de Calidad del Aire (Orden TEC/351/2019, de 18 de marzo) y Resolucion de 2 de septiembre de 2020. Elaboracion propia con datos proporcionados por el <a href="https://www.valencia.es/val/qualitataire/contaminacio-atmosferica" target="_blank">Servicio de mejora climatica</a>.</div>
             </div>
           </div>
         </section>
-        """,
-        unsafe_allow_html=True,
-    )
+      </body>
+    </html>
+    """
+    components.html(info_html, height=835, scrolling=True)
 
 
 def dashboard() -> None:
@@ -756,6 +893,8 @@ def dashboard() -> None:
         pollutant, mode = toolbar()
         if mode == "Historico":
             historical_panel(pollutant)
+        elif mode == "KPIs":
+            current_kpis_panel(current)
         elif mode == "Info":
             info_panel()
         else:
