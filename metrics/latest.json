@@ -1,0 +1,6 @@
+{
+  "trained_at_utc": "2026-06-23T02:31:40+00:00",
+  "models": 64,
+  "beats_baseline_mae": 47,
+  "avg_r2": 0.3565671315440231
+}
