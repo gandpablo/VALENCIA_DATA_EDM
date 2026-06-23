@@ -60,35 +60,43 @@
     "timestamp": "2026-06-23_11-53"
   },
   {
-    "path": "data/scraped/history/2026-06-23_11-56.csv",
-    "timestamp": "2026-06-23_11-56"
-  },
-  {
-    "path": "data/scraped/history/2026-06-23_12-03.csv",
-    "timestamp": "2026-06-23_12-03"
-  },
-  {
     "path": "data/scraped/history/2026-06-23_12-27.csv",
     "timestamp": "2026-06-23_12-27"
   },
   {
-    "path": "data/scraped/history/2026-06-23_12-34.csv",
-    "timestamp": "2026-06-23_12-34"
+    "path": "data/scraped/history/2026-06-23_15-29.csv",
+    "timestamp": "2026-06-23_15-29"
   },
   {
-    "path": "data/scraped/history/2026-06-23_12-38.csv",
-    "timestamp": "2026-06-23_12-38"
+    "path": "data/scraped/history/2026-06-23_15-45.csv",
+    "timestamp": "2026-06-23_15-45"
   },
   {
-    "path": "data/scraped/history/2026-06-23_12-58.csv",
-    "timestamp": "2026-06-23_12-58"
+    "path": "data/scraped/history/2026-06-23_17-04.csv",
+    "timestamp": "2026-06-23_17-04"
   },
   {
-    "path": "data/scraped/history/2026-06-23_13-10.csv",
-    "timestamp": "2026-06-23_13-10"
+    "path": "data/scraped/history/2026-06-23_17-25.csv",
+    "timestamp": "2026-06-23_17-25"
+  },
+  {
+    "path": "data/scraped/history/2026-06-23_18-31.csv",
+    "timestamp": "2026-06-23_18-31"
+  },
+  {
+    "path": "data/scraped/history/2026-06-23_19-39.csv",
+    "timestamp": "2026-06-23_19-39"
+  },
+  {
+    "path": "data/scraped/history/2026-06-23_20-55.csv",
+    "timestamp": "2026-06-23_20-55"
   },
   {
     "path": "data/scraped/history/2026-06-23_21-21.csv",
     "timestamp": "2026-06-23_21-21"
+  },
+  {
+    "path": "data/scraped/history/2026-06-23_21-28.csv",
+    "timestamp": "2026-06-23_21-28"
   }
 ]
