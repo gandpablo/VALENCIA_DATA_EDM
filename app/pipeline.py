@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import base64
-import csv
 import json
 import math
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from io import StringIO
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -27,8 +26,6 @@ SCRAPED_HISTORY_DIR = SCRAPED_DIR / "history"
 PREDICTIONS_DIR = ROOT / "predictions"
 PREDICTIONS_HISTORY_DIR = PREDICTIONS_DIR / "history"
 MODELS_DIR = ROOT / "models" / "builded"
-LOGS_DIR = ROOT / "logs"
-STATE_DIR = ROOT / "state"
 TOKEN_FILE = ROOT / ".confing"
 
 OWNER = "gandpablo"
@@ -56,16 +53,12 @@ NAME_MAP = {
 
 
 def ensure_dirs() -> None:
-    for path in [SCRAPED_HISTORY_DIR, PREDICTIONS_HISTORY_DIR, LOGS_DIR, STATE_DIR]:
+    for path in [SCRAPED_HISTORY_DIR, PREDICTIONS_HISTORY_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
 
 def local_now() -> datetime:
     return datetime.now(ZoneInfo(LOCAL_TIMEZONE))
-
-
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def timestamp_name() -> str:
@@ -288,38 +281,6 @@ def make_predictions(current_path: Path, filename: str) -> Path:
     return history_path
 
 
-def append_event(event: str, status: str, message: str) -> None:
-    ensure_dirs()
-    path = LOGS_DIR / "pipeline_events.csv"
-    rows = []
-    if path.exists():
-        rows = list(csv.DictReader(StringIO(path.read_text(encoding="utf-8-sig"))))
-    row = {
-        "timestamp": utc_now(),
-        "event": event,
-        "status": status,
-        "duration_seconds": "0.00",
-        "message": message,
-    }
-    rows.append(row)
-    with path.open("w", newline="", encoding="utf-8-sig") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["timestamp", "event", "status", "duration_seconds", "message"])
-        writer.writeheader()
-        writer.writerows(rows[-500:])
-    (LOGS_DIR / "latest_event.json").write_text(json.dumps(row, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def update_state(scrape_path: Path, prediction_path: Path) -> None:
-    STATE_DIR.mkdir(parents=True, exist_ok=True)
-    state = {
-        "last_scrape_utc": utc_now(),
-        "last_scrape_path": f"data/scraped/history/{scrape_path.name}",
-        "last_prediction_utc": utc_now(),
-        "last_prediction_path": f"predictions/history/{prediction_path.name}",
-    }
-    (STATE_DIR / "pipeline_state.json").write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 def upload_outputs(scrape_path: Path, prediction_path: Path) -> None:
     token = read_token()
     files = [
@@ -329,9 +290,6 @@ def upload_outputs(scrape_path: Path, prediction_path: Path) -> None:
         ("predictions/latest.csv", PREDICTIONS_DIR / "latest.csv"),
         (f"predictions/history/{prediction_path.name}", prediction_path),
         ("predictions/index.json", PREDICTIONS_DIR / "index.json"),
-        ("state/pipeline_state.json", STATE_DIR / "pipeline_state.json"),
-        ("logs/pipeline_events.csv", LOGS_DIR / "pipeline_events.csv"),
-        ("logs/latest_event.json", LOGS_DIR / "latest_event.json"),
     ]
     for remote_path, local_path in files:
         upload_file(token, remote_path, local_path.read_bytes(), f"Update {remote_path}")
@@ -343,8 +301,6 @@ def run_manual_pipeline() -> dict[str, str]:
     df = scrape_current_table()
     scrape_path = save_scrape(df, filename)
     prediction_path = make_predictions(scrape_path, filename)
-    update_state(scrape_path, prediction_path)
-    append_event("manual_access", "ok", f"scraped and predicted {filename}")
     upload_outputs(scrape_path, prediction_path)
     return {
         "scrape_file": scrape_path.name,
