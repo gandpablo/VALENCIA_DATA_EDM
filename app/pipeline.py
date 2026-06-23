@@ -145,11 +145,16 @@ def scrape_current_table() -> pd.DataFrame:
         driver.quit()
 
     df = pd.read_html(StringIO(table_html))[0]
-    return df[SCRAPER_COLUMNS]
+    df = df[SCRAPER_COLUMNS].dropna(how="all")
+    if df.empty or df["µg/m3"].dropna().empty:
+        raise RuntimeError("Scrape returned no station rows; keeping previous data.")
+    return df
 
 
 def save_scrape(df: pd.DataFrame, filename: str) -> Path:
     ensure_dirs()
+    if df.empty or df["µg/m3"].dropna().empty:
+        raise RuntimeError("Refusing to save an empty scrape.")
     history_path = SCRAPED_HISTORY_DIR / filename
     latest_path = SCRAPED_DIR / "latest.csv"
     df.to_csv(history_path, index=False, encoding="utf-8-sig")
@@ -181,6 +186,8 @@ def load_scraped_history(current_path: Path) -> pd.DataFrame:
         if pd.isna(ts):
             continue
         df = pd.read_csv(path, encoding="utf-8-sig")
+        if df.empty:
+            continue
         df["timestamp"] = ts
         rows.append(df)
 
