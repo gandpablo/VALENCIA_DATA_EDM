@@ -54,5 +54,9 @@
   {
     "path": "predictions/history/2026-06-24_16-05.csv",
     "timestamp": "2026-06-24_16-05"
+  },
+  {
+    "path": "predictions/history/2026-06-24_16-46.csv",
+    "timestamp": "2026-06-24_16-46"
   }
 ]
